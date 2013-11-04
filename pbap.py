@@ -17,16 +17,19 @@ class PBAP(object):
         self.__client = lightblue.obex.OBEXClient(device_address, self.__port)
         response = self.__client.connect({'target': self.PBAP_TARGET_UUID})
         if (response.reason != 'OK'):
-            raise Exception("Could not connect " + response) 
+            raise Exception("Could not connect " + response)
 		    # TODO build a better exeption
         self.connection_id = response.headers['connection-id']
 
     def __find_service_port(self):
         """ Find which bluetooth port PBAP is usning on the device """
         for (a, port, service) in lightblue.findservices(self.__device_address):
-            match = re.search("Phonebook Access", service)
-            if (match != None):
-                self.__port = port
+            try :
+                match = re.search("Phonebook Access", service)
+                if (match != None):
+                    self.__port = port
+            except TypeError:
+                continue
 
 
     def pull_phonebook(self):
