@@ -21,3 +21,7 @@ class TestVcardparser(unittest.TestCase):
     def test_split_property(self):
         expected = ("test", "test")
         self.assertEquals(split_property("test:test"), expected)
+
+    def test_split_property_URL(self):
+        expected = ("URL", "http://webpage.com")
+        self.assertEquals(split_property("URL:http://webpage.com"), expected)

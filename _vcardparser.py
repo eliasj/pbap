@@ -12,6 +12,8 @@ def split_vcards(vcards):
 
 def split_property(prop):
 	prop_par = tuple(re.split(":", prop))
-	if (len(prop_par) != 2):
+	if (len(prop_par) < 2):
 		raise ValueError()
+	elif (len(prop_par) > 2):
+		return (prop_par[0], reduce(lambda x, y: x + ':' + y, prop_par[1:]))
 	return prop_par
