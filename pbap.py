@@ -49,16 +49,6 @@ class PBAP(object):
 		    # TODO build a better exeption
         self.connection_id = response.headers['connection-id']
 
-    def __find_service_port(self):
-        """ Find which bluetooth port PBAP is usning on the device """
-        for (a, port, service) in lightblue.findservices(self.__device_address):
-            try :
-                match = re.search("Phonebook Access", service)
-                if (match != None):
-                    self.__port = port
-            except TypeError:
-                continue
-
     def pull_phonebook(self):
         """ Get the all the contacts from the phonebook """
         body_of_response = StringIO.StringIO()
