@@ -46,7 +46,7 @@ class PBAP(object):
         response = self.__client.connect({'target': self.PBAP_TARGET_UUID})
         if (response.reason != 'OK'):
             raise Exception("Could not connect " + response)
-		    # TODO build a better exeption
+		    # TODO build a better exception
         self.connection_id = response.headers['connection-id']
 
     def pull_phonebook(self):
@@ -57,16 +57,23 @@ class PBAP(object):
                     'name':'pb.vcf'}, body_of_response)
         if (response.reason != 'OK'):
             raise Exception("Could not get the phonebook" + str(response))
-                # TODO build a better exeption
+            # TODO build a better exception
         return [vcard_to_dict(x) for x in split_vcards(body_of_response.getvalue())]
 
     def set_phonebook(self):
         """ Set which phonebook that should be used"""
         pass
 
-    def pull_vcard_listning(self):
+    def pull_vcard_listing(self):
         """ List all the contacts (vcards) """
-        pass
+        body_of_response = StringIO.StringIO()
+        response = self.__client.get({'connection-id':self.connection_id,
+            'type':'x-bt/vcard-listing',
+            'name':'pb.vcf'}, body_of_response)
+        if (response.reason != 'OK'):
+            raise Exception("Clould not list the vCards" + str(response))
+            # TODO build a better exception
+        return body_of_response.getvalue()
 
     def pull_vcard_entry(self):
         """ Get a vcard """
