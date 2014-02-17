@@ -10,8 +10,9 @@ class TestVcardparser(unittest.TestCase):
     N:Cha;Willy;;;\r\nFN:Willy Cha\r\nTEL;CELL:0707707043\r\nEND:VCARD\r\n
     BEGIN:VCARD\r\nVERSION:2.1\r\nN:Rickard;Vaktis;;;\r\nFN:Vaktis Rickard\r\n
     TEL;WORK:0313321231\r\nEND:VCARD"""
-    vcard = """BEGIN:VCARD\r\nVERSION:2.1\r\nFN:Mitt namn\r\n
-    N:Mitt namn\r\nEND:VCARD"""
+    vcard = """
+        BEGIN:VCARD\r\nVERSION:2.1\r\nFN:Mitt namn\r\nN:Mitt namn\r\n
+        END:VCARD"""
 
     def test_split_two_vcard(self):
         self.assertEquals(len(split_vcards(self.two_vcards)), 2)

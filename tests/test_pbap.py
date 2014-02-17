@@ -29,14 +29,14 @@ class TestPBAP(unittest.TestCase):
     def test_pull_phonebook(self, mock_stringio):
         self.__mc.get.return_value = lightblue.obex.OBEXResponse(
             lightblue.obex.OK, {195: 35288, 203: 1})
-        mock_stringio.return_value.getvalue.return_value =
-        """BEGIN:VCARD\r\nVERSION:2.1\r\nFN:Mitt namn\r\nN:Mitt namn\r\n
-        END:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\nN:Cha;Willy;;;\r\n
-        FN:Willy Cha\r\nTEL;CELL:0707707043\r\nEND:VCARD\r\nBEGIN:VCARD\r\n
-        VERSION:2.1\r\nN:Rickard;Vaktis;;;\r\nFN:Vaktis Rickard\r\n
-        TEL;WORK:0313321231\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\n
-        N:F;F;;;\r\nFN:F F\r\nTEL;VOICE:9837\r\nEND:VCARD\r\n
-        BEGIN:VCARD\r\nVERSION:2.1\r\nN:M;M;;;\r\nFN:M M\r\n
-        TEL;VOICE:9958\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\n
-        N:I;I;;;\r\nFN:I I\r\nTEL;VOICE:9774\r\nEND:VCARD"""
+        mock_stringio.return_value.getvalue.return_value = """
+            BEGIN:VCARD\r\nVERSION:2.1\r\nFN:Mitt namn\r\nN:Mitt namn\r\n
+            END:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\nN:Cha;Willy;;;\r\n
+            FN:Willy Cha\r\nTEL;CELL:0707707043\r\nEND:VCARD\r\nBEGIN:VCARD\r\n
+            VERSION:2.1\r\nN:Rickard;Vaktis;;;\r\nFN:Vaktis Rickard\r\n
+            TEL;WORK:0313321231\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\n
+            N:F;F;;;\r\nFN:F F\r\nTEL;VOICE:9837\r\nEND:VCARD\r\n
+            BEGIN:VCARD\r\nVERSION:2.1\r\nN:M;M;;;\r\nFN:M M\r\n
+            TEL;VOICE:9958\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\n
+            N:I;I;;;\r\nFN:I I\r\nTEL;VOICE:9774\r\nEND:VCARD"""
         self.assertEqual(6, len(self.__pb.pull_phonebook()))
