@@ -1,7 +1,7 @@
 language: python
 
 install:
-    - apt-get install libopenobex1-dev
+    - apt-get install -qq libopenobex1-dev
     - pip install pybluez
     - pip install lightblue
 
