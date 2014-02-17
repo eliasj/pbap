@@ -1,0 +1,12 @@
+language: python
+
+install:
+    - apt-get install libopenobex1-dev
+    - pip install pybluez
+    - pip install lightblue
+
+script: nosetests
+
+notification:
+    email:
+        - eliasj@student.chalmers.se
