@@ -5,7 +5,7 @@ before_install:
     - sudo apt-get install -qq libopenobex1-dev
 install:
     - pip install pybluez
-    - pip install lightblue --allow-external
+    - pip install --allow-all-external lightblue
 
 script: nosetests
 
