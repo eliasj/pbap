@@ -67,23 +67,38 @@ class PBAP(object):
             vcard_to_dict(x) for x in split_vcards(
                 body_of_response.getvalue())]
 
-    def set_phonebook(self):
+    def set_phonebook(self, phonebook):
         """ Set which phonebook that should be used"""
-        pass
+        if phonebook not in ["telecom", "SIM1", ""]:
+            raise Exception("Not a phonebook")
 
-    def pull_vcard_listing(self):
+        response = self.__client.setpath(
+            {
+                'connection-id': self.connection_id,
+                "name": phonebook})
+
+        if response.code != lightblue.obex.OK:
+            raise Exception(str(response))
+        return response.code
+
+    def pull_vcard_listing(self, folder):
         """ List all the contacts (vcards) """
+        if folder not in
+        ["pb", "ich", "och", "mch", "cch", "spd", "fav"]:
+            raise Exception("Not a folder in the phonebook")
         body_of_response = StringIO.StringIO()
         response = self.__client.get(
             {
                 'connection-id': self.connection_id,
                 'type': 'x-bt/vcard-listing',
-                'name': 'pb.vcf'}, body_of_response)
+                'name': folder}, body_of_response)
 
         if (response.reason != 'OK'):
             raise Exception("Clould not list the vCards" + str(response))
             # TODO build a better exception
-        return body_of_response.getvalue()
+        regex = re.compile(
+            "<card handle = .(\d+.vcf). name = .(\w+;\w+)./>")
+        return regex.findall(body_of_response.getvalue())
 
     def pull_vcard_entry(self):
         """ Get a vcard """

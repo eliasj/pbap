@@ -40,3 +40,72 @@ class TestPBAP(unittest.TestCase):
             TEL;VOICE:9958\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:2.1\r\n
             N:I;I;;;\r\nFN:I I\r\nTEL;VOICE:9774\r\nEND:VCARD"""
         self.assertEqual(6, len(self.__pb.pull_phonebook()))
+
+    def test_set_phonebook(self):
+        self.__mc.setpath.return_value = lightblue.obex.OBEXResponse(
+            lightblue.obex.OK, {195: 35288, 203: 1})
+        self.assertEqual(lightblue.obex.OK, self.__pb.set_phonebook("telecom"))
+
+    def test_set_phonebook_not_phonebook(self):
+        self.assertRaises(Exception, self.__pb.set_phonebook, "cake")
+
+    def test_pull_vcard_listing_wrong_folder(self):
+        self.assertRaises(Exception, self.__pb.pull_vcard_listing, "cake")
+
+    @patch('StringIO.StringIO')
+    def test_pull_vcard_listing(self, mock_stringio):
+        self.__mc.get.return_value = lightblue.obex.OBEXResponse(
+            lightblue.obex.OK, {195: 35288, 203: 1})
+        mock_stringio.return_value.getvalue.return_value = """
+            <?xml version="1.0"?> <!DOCTYPE vcard_listning SYSTEM
+            "vcard-listing.dtd"> <vCard-listing version="1.0">
+            <card handle = "0.vcf" name = "Doung;My"/>
+            </vCard-listing>"""
+        self.assertEqual(1, len(self.__pb.pull_vcard_listing("pb")))
+        pass
+
+    def test_pull_vcard_entry(self):
+        pass
+
+
+class TestFunctions(unittest.TestCase):
+
+    def test_find_pbap_port_found(self):
+        lightblue.findservices = Mock(
+            return_value=[
+                ("fake address", '15', "Phonebook Access")])
+        self.assertEqual('15', pbap.find_pbap_port("fake"))
+
+    def test_find_pbap_port_not_found(self):
+        lightblue.findservices = Mock(
+            return_value=[
+                ("fake address", '15', "Voice")])
+        self.assertIsNone(pbap.find_pbap_port("fake"))
+
+    def test_have_pbap_service_found(self):
+        lightblue.findservices = Mock(
+            return_value=[
+                ("fake address", '15', "Phonebook Access")])
+        self.assertTrue(pbap.have_pbap_service(["fake", "15", "SK17i"]))
+
+    def test_have_pbap_service_not_found(self):
+        lightblue.findservices = Mock(
+            return_value=[
+                ("fake address", '15', "Voice")])
+        self.assertFalse(pbap.have_pbap_service(["fake", "15", "SK17i"]))
+
+    def test_find_devices(self):
+        lightblue.finddevices = Mock(
+            return_value=[
+                ("fake address", '15', "SK17i"),
+                ("fake address", '15', "MT15i")])
+        lightblue.findservices = Mock(
+            return_value=[
+                ("fake address", '15', "Phonebook Access")])
+        result = pbap.find_devices()
+        self.assertEqual(2, len(result))
+        self.assertEqual(
+            [
+                ("fake address", '15', "SK17i"),
+                ("fake address", '15', "MT15i")],
+            result)
