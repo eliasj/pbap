@@ -83,9 +83,9 @@ class PBAP(object):
 
     def pull_vcard_listing(self, folder):
         """ List all the contacts (vcards) """
-        if folder not in
-        ["pb", "ich", "och", "mch", "cch", "spd", "fav"]:
-            raise Exception("Not a folder in the phonebook")
+        okay_folder = ["pb", "ich", "och", "mch", "cch", "spd", "fav"]
+        if folder not in okay_folder:
+                raise Exception("Not a folder in the phonebook")
         body_of_response = StringIO.StringIO()
         response = self.__client.get(
             {
