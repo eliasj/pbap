@@ -64,8 +64,18 @@ class TestPBAP(unittest.TestCase):
         self.assertEqual(1, len(self.__pb.pull_vcard_listing("pb")))
         pass
 
-    def test_pull_vcard_entry(self):
-        pass
+    def test_pull_vcard_entry_wrong_name(self):
+        self.assertRaises(Exception, self.__pb.pull_vcard_entry, "cookie")
+
+    @patch('StringIO.StringIO')
+    def test_pull_vcad_entry(self, mock_stringio):
+        self.__mc.get.return_value = lightblue.obex.OBEXResponse(
+            lightblue.obex.OK, {195: 35288, 203: 1})
+        mock_stringio.return_value.getvalue.return_value = """
+            BEGIN:VCARD\r\nVERSION:2.1\r\nFN:Mitt namn\r\nN:Mitt namn\r\n
+            END:VCARD"""
+        self.assertEqual(3, len(self.__pb.pull_vcard_entry("1.vcf")))
+        self.assertEqual(3, len(self.__pb.pull_vcard_entry("1")))
 
 
 class TestFunctions(unittest.TestCase):

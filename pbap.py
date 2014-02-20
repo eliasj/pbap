@@ -18,7 +18,7 @@ def find_devices():
 def have_pbap_service(device):
     """ Check if a device have PBAP running. """
     try:
-        if (find_pbap_port(device[0]) is not None):
+        if find_pbap_port(device[0]) is not None:
             return True
         else:
             return False
@@ -30,7 +30,7 @@ def find_pbap_port(device_address):
     """ Find which bluetooth port PBAP is usning on the device """
     for (address, port, service) in lightblue.findservices(device_address):
         match = re.search("Phonebook Access", service)
-        if (match is not None):
+        if match is not None:
             return port
     return None
 
@@ -46,7 +46,7 @@ class PBAP(object):
         self.__port = find_pbap_port(device_address)
         self.__client = lightblue.obex.OBEXClient(device_address, self.__port)
         response = self.__client.connect({'target': self.PBAP_TARGET_UUID})
-        if (response.reason != 'OK'):
+        if response.reason != 'OK':
             raise Exception("Could not connect " + response)
             # TODO build a better exception
         self.connection_id = response.headers['connection-id']
@@ -60,7 +60,7 @@ class PBAP(object):
                 'type': 'x-bt/phonebook',
                 'name': 'pb.vcf'}, body_of_response)
 
-        if (response.reason != 'OK'):
+        if response.reason != 'OK':
             raise Exception("Could not get the phonebook" + str(response))
             # TODO build a better exception
         return [
@@ -85,7 +85,7 @@ class PBAP(object):
         """ List all the contacts (vcards) """
         okay_folder = ["pb", "ich", "och", "mch", "cch", "spd", "fav"]
         if folder not in okay_folder:
-                raise Exception("Not a folder in the phonebook")
+            raise Exception("Not a folder in the phonebook")
         body_of_response = StringIO.StringIO()
         response = self.__client.get(
             {
@@ -93,13 +93,29 @@ class PBAP(object):
                 'type': 'x-bt/vcard-listing',
                 'name': folder}, body_of_response)
 
-        if (response.reason != 'OK'):
+        if response.reason != 'OK':
             raise Exception("Clould not list the vCards" + str(response))
             # TODO build a better exception
         regex = re.compile(
             "<card handle = .(\d+.vcf). name = .(\w+;\w+)./>")
         return regex.findall(body_of_response.getvalue())
 
-    def pull_vcard_entry(self):
+    def pull_vcard_entry(self, vcard_number):
         """ Get a vcard """
-        pass
+        if not vcard_number.endswith(".vcf"):
+            try:
+                int(vcard_number)
+            except ValueError, error:
+                raise Exception("Wrong name on vCard entry")
+            vcard_number += ".vcf"
+        body_of_response = StringIO.StringIO()
+
+        response = self.__client.get(
+            {
+                "connection-id": self.connection_id,
+                "type": "x-bt/vcard",
+                "name": vcard_number}, body_of_response)
+
+        if response.code != lightblue.obex.OK:
+            raise Exception("Clould not get the vCard\n" + str(response))
+        return vcard_to_dict(body_of_response.getvalue())
