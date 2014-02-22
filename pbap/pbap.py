@@ -79,7 +79,6 @@ class PBAP(object):
 
         if response.code != lightblue.obex.OK:
             raise Exception(str(response))
-        return response.code
 
     def pull_vcard_listing(self, folder):
         """ List all the contacts (vcards) """
@@ -97,8 +96,7 @@ class PBAP(object):
             raise Exception("Clould not list the vCards" + str(response))
             # TODO build a better exception
         regex = re.compile(
-            "<card handle = .(\d+.vcf). name = .(\w+;\w+)./>")
-        print body_of_response.getvalue()
+            "<card handle\s?=\s?\"(\d+\.vcf)\" name\s?=\s?\"([\w|\s|;]+)\"\s?/>")
         return regex.findall(body_of_response.getvalue())
 
     def pull_vcard_entry(self, vcard_number):
