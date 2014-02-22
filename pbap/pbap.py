@@ -98,6 +98,7 @@ class PBAP(object):
             # TODO build a better exception
         regex = re.compile(
             "<card handle = .(\d+.vcf). name = .(\w+;\w+)./>")
+        print body_of_response.getvalue()
         return regex.findall(body_of_response.getvalue())
 
     def pull_vcard_entry(self, vcard_number):
