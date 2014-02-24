@@ -10,4 +10,8 @@ Installation
 
 ./setup.py install
 
+Links
+-----
 
+* [Phonebook Access Profile Specification](https://www.bluetooth.org/DocMan/handlers/DownloadDoc.ashx?doc_id=281299)
+* [Lightblue](https://github.com/pebble/lightblue-0.4) version the I have used.
