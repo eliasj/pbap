@@ -69,7 +69,10 @@ class PBAP(object):
 
     def set_phonebook(self, phonebook):
         """ Set which phonebook that should be used"""
-        if phonebook not in ["telecom", "SIM1", ""]:
+        folders = [
+            "telecom", "SIM1", "", "pb", "ich", "och",
+            "mch", "cch", "spd", "fav"]
+        if phonebook not in folders:
             raise Exception("Not a phonebook")
 
         response = self.__client.setpath(
@@ -96,7 +99,9 @@ class PBAP(object):
             raise Exception("Clould not list the vCards" + str(response))
             # TODO build a better exception
         regex = re.compile(
-            "<card handle\s?=\s?\"(\d+\.vcf)\" name\s?=\s?\"([\w|\s|;]+)\"\s?/>")
+            "<card handle\s?=\s?\"(\d+\.vcf)\" " +
+            "name\s?=\s?\"([\w|\s|;]+)\"\s?/>"
+            )
         return regex.findall(body_of_response.getvalue())
 
     def pull_vcard_entry(self, vcard_number):
