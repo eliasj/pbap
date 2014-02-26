@@ -40,6 +40,7 @@ class PBAP(object):
     PBAP_TARGET_UUID = uuid.UUID(
         '{796135f0-f0c5-11d8-0966-0800200c9a66}').bytes
     __port = 0
+    path = "/"
 
     def __init__(self, device_address):
         self.__device_address = device_address
@@ -69,19 +70,32 @@ class PBAP(object):
 
     def set_phonebook(self, phonebook):
         """ Set which phonebook that should be used"""
-        folders = [
-            "telecom", "SIM1", "", "pb", "ich", "och",
-            "mch", "cch", "spd", "fav"]
-        if phonebook not in folders:
-            raise Exception("Not a phonebook")
+        if phonebook == "..":
+            response = self.__client.setpath(
+                {'connection-id': self.connection_id},
+                cdtoparent=True)
+        else:
+            if self.path.endswith("/"):
+                folders = ["telecom", "SIM1", ]
+            elif self.path.endswith("SIM1"):
+                folders = ["telecom"]
+            elif self.path.endswith("telecom"):
+                folders = ["pb", "ich", "och", "mch", "cch", "spd", "fav"]
 
-        response = self.__client.setpath(
-            {
-                'connection-id': self.connection_id,
-                "name": phonebook})
+            folders.append("")  # go to root
+
+            if phonebook not in folders:
+                raise Exception("Not a phonebook")
+
+            response = self.__client.setpath(
+                {
+                    'connection-id': self.connection_id,
+                    "name": phonebook})
 
         if response.code != lightblue.obex.OK:
             raise Exception(str(response))
+
+        self._update_path(phonebook)
 
     def pull_vcard_listing(self, folder):
         """ List all the contacts (vcards) """
@@ -123,3 +137,13 @@ class PBAP(object):
         if response.code != lightblue.obex.OK:
             raise Exception("Clould not get the vCard\n" + str(response))
         return vcard_to_dict(body_of_response.getvalue())
+
+    def _update_path(self, add_folder):
+        if add_folder == "":
+            self.path = "/"
+        elif add_folder == "..":
+            self.path = self.path.rsplit("/", 1)[0]
+        elif self.path.endswith("/"):
+            self.path += add_folder
+        else:
+            self.path += "/" + add_folder

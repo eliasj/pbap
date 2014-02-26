@@ -21,6 +21,8 @@ class TestPBAP(unittest.TestCase):
         self.__mc.connect.return_value = lightblue.obex.OBEXResponse(
             lightblue.obex.OK, {195: 35288, 203: 1})
         self.__pb = pbap.PBAP("fake address")
+        self.__mc.setpath.return_value = lightblue.obex.OBEXResponse(
+            lightblue.obex.OK, {195: 35288, 203: 1})
 
     def test__init__(self):
         self.assertEqual(1, self.__pb.connection_id)
@@ -41,14 +43,43 @@ class TestPBAP(unittest.TestCase):
             N:I;I;;;\r\nFN:I I\r\nTEL;VOICE:9774\r\nEND:VCARD"""
         self.assertEqual(6, len(self.__pb.pull_phonebook()))
 
-    def test_set_phonebook(self):
-        self.__mc.setpath.return_value = lightblue.obex.OBEXResponse(
-            lightblue.obex.OK, {195: 35288, 203: 1})
-        self.__pb.set_phonebook("telecom")
-        self.assertTrue(True)
-
     def test_set_phonebook_not_phonebook(self):
         self.assertRaises(Exception, self.__pb.set_phonebook, "cake")
+
+    def test_set_phonebook(self):
+        self.__pb.set_phonebook("telecom")
+        self.assertEqual("/telecom", self.__pb.path)
+
+    def test_set_phonebook_depth_2(self):
+        self.__pb.set_phonebook("telecom")
+        self.__pb.set_phonebook("pb")
+        self.assertEqual("/telecom/pb", self.__pb.path)
+
+    def test_set_phonebook_depth_2_error(self):
+        self.__pb.set_phonebook("telecom")
+        self.assertEqual("/telecom", self.__pb.path)
+        self.assertRaises(Exception, self.__pb.set_phonebook, "telecom")
+
+    def test_set_phonebook_wrong_order(self):
+        self.__pb.set_phonebook("telecom")
+        self.assertEqual("/telecom", self.__pb.path)
+        self.assertRaises(Exception, self.__pb.set_phonebook, "SIM1")
+
+    def test_set_phonebook_back_to_root(self):
+        self.__pb.set_phonebook("telecom")
+        self.assertEqual("/telecom", self.__pb.path)
+        self.__pb.set_phonebook("")
+        self.assertEqual("/", self.__pb.path)
+
+    def test_set_phonebook_go_up_a_level(self):
+        self.__pb.set_phonebook("SIM1")
+        self.assertEqual("/SIM1", self.__pb.path)
+        self.__pb.set_phonebook("telecom")
+        self.assertEqual("/SIM1/telecom", self.__pb.path)
+        self.__pb.set_phonebook("ich")
+        self.assertEqual("/SIM1/telecom/ich", self.__pb.path)
+        self.__pb.set_phonebook("..")
+        self.assertEqual("/SIM1/telecom", self.__pb.path)
 
     def test_pull_vcard_listing_wrong_folder(self):
         self.assertRaises(Exception, self.__pb.pull_vcard_listing, "cake")
