@@ -23,7 +23,8 @@ pb = pbap.PBAP(devices[0][0])
 # Get the whole phonebook from the device.
 phonebook = pb.pull_phonebook()
 
-# To be able to list all the contacts, you have to select which type of phonebook to use. The phones or the sim cards.
+# To be able to list all the contacts, you have to select which type of phonebook
+# to use. The phones or the sim cards.
 pb.set_phonebook("telecom")
 # You can list following phonebooks: pb, ich, och, mch, cch, spd and fav.
 list_of_all_contacts = pb.pull_vcard_listing("pb")
