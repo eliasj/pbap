@@ -6,8 +6,11 @@ before_install:
 install:
     - pip install pybluez
     - pip install --allow-all-external --allow-unverified lightblue lightblue
+    - pip install coveralls
 
-script: nosetests
+script: 
+    - nosetests
+    - coverage run --source=pbap setup.py test
 after_success:
     - coveralls
 
