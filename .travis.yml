@@ -8,6 +8,8 @@ install:
     - pip install --allow-all-external --allow-unverified lightblue lightblue
 
 script: nosetests
+after_success:
+    - coveralls
 
 notification:
     email:
