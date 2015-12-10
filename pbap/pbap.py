@@ -27,13 +27,13 @@ def have_pbap_service(device):
             return True
         else:
             return False
-    except AttributeError, error:
+    except AttributeError:
         return False
 
 
 def find_pbap_port(device_address):
     """ Find which bluetooth port PBAP is usning on the device. """
-    for (address, port, service) in lightblue.findservices(device_address):
+    for (_, port, service) in lightblue.findservices(device_address):
         match = re.search("Phonebook Access", service)
         if match is not None:
             return port
@@ -131,7 +131,7 @@ class PBAP(object):
         if not vcard_number.endswith(".vcf"):
             try:
                 int(vcard_number)
-            except ValueError, error:
+            except ValueError:
                 raise Exception("Wrong name on vCard entry")
             vcard_number += ".vcf"
         body_of_response = StringIO.StringIO()
