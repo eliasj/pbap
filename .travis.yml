@@ -3,17 +3,22 @@ language: python
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq libopenobex1-dev
+    - pip install codecov
+    - pip install coveralls
 install:
     - pip install pybluez
     - pip install --allow-all-external --allow-unverified lightblue lightblue
-    - pip install coveralls
 
 script: 
     - nosetests
     - coverage run --source=pbap setup.py test
+    
 after_success:
     - coveralls
+    - codecov
 
 notification:
     email:
         - eliasj@student.chalmers.se
+
+  
